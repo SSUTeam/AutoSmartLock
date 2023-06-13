@@ -1,0 +1,7 @@
+__pycache__/
+models/__pycache__/
+utils/__pycache__/
+results/
+*.mp4
+*.avi
+*.swp

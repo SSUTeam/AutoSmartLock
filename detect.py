@@ -45,15 +45,17 @@ import joblib
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 import numpy as np
+import threading
+from flask import Flask
+import shutil
+
 
 # define the name of the directory to be created
 ### 디렉토리 만드는 코드
+if os.path.exists('results/'):
+    shutil.rmtree('results/')
 os.mkdir('results/')
-os.mkdir('results/data/')
 os.mkdir('results/frames/')
-with open('results/data/data.csv', 'w', encoding='utf-8', newline='') as csvFile:
-    writer = csv.writer(csvFile)
-    writer.writerow(['frame', 'xmin', 'ymin', 'xmax', 'ymax'])
 ###
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -154,8 +156,12 @@ def run(
     # Run inference
     model.warmup(imgsz=(1 if pt else bs, 3, *imgsz))  # warmup
     dt, seen = [0.0, 0.0, 0.0], 0
-    pre_time = time.time()
+    cur_time = time.time()
     for path, im, im0s, vid_cap, s in dataset:
+        pre_time = cur_time
+        cur_time = time.time()
+        print(f'pre_time: {pre_time}, cur_time: {cur_time}')
+
         t1 = time_sync()
         im = torch.from_numpy(im).to(device)
         im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
@@ -180,7 +186,6 @@ def run(
 
         # Process predictions
         for i, det in enumerate(pred):  # per image
-            cur_time = time.time()
             object_count = 0    # 객체 추적 변수
             seen += 1
             if webcam:  # batch_size >= 1
@@ -323,7 +328,6 @@ def run(
                     preObjectTracker[key] = value[1]
 
                 # 현재 프레임 시간을 다음 프레임에서 사용하기 위해 저장
-                pre_time = cur_time
 
 ###
 
