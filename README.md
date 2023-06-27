@@ -10,6 +10,12 @@ pip install -r requirements.txt
 ## Load dataset
 ...
 
+## Training distance model
+```
+cd distance-model
+python training.py --input [.csv file path] --output [model path]
+```
+
 ## Run
 ```
 Run inference on images, videos, directories, streams, etc.
@@ -31,4 +37,8 @@ Usage - sources:
 Usage - model:
     $ python path/to/detect.py --model   mymodel.pkl                # AutoSmartLock custom model 
                                          path/*.pkl                 # your custom model 
+```
+
+```
+python detect.py --weights training-result/weights/best.pt --source josun.mp4 --model mymodel.pkl
 ```
