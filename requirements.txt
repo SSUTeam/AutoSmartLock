@@ -41,3 +41,9 @@ thop  # FLOPs computation
 
 tree
 xlsxwriter
+
+cmake
+dlib
+joblib
+scikit-learn
+flask
