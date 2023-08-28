@@ -248,6 +248,8 @@ class LoadImages:
     def new_video(self, path):
         self.frame = 0
         self.cap = cv2.VideoCapture(path)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     def __len__(self):
@@ -261,6 +263,8 @@ class LoadWebcam:  # for inference
         self.stride = stride
         self.pipe = eval(pipe) if pipe.isnumeric() else pipe
         self.cap = cv2.VideoCapture(self.pipe)  # video capture object
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)  # set buffer size
 
     def __iter__(self):
@@ -322,6 +326,8 @@ class LoadStreams:
                 s = pafy.new(s).getbest(preftype="mp4").url  # YouTube URL
             s = eval(s) if s.isnumeric() else s  # i.e. s = '0' local webcam
             cap = cv2.VideoCapture(s)
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
             assert cap.isOpened(), f'{st}Failed to open {s}'
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

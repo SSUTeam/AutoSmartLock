@@ -49,6 +49,16 @@ import threading
 # from flask import Flask
 import shutil
 
+# Jetson.GPIO
+import Jetson.GPIO as GPIO
+#Relay = 10
+buzzer = 33
+led = 7
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+#GPIO.setup(Relay, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(buzzer, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(led, GPIO.OUT, initial=GPIO.LOW)
 
 # Flask Server
 def server():
@@ -178,6 +188,12 @@ def run(
             im0 = im0s.copy()
 
             imc = im0.copy() if save_crop else im0  # for save_crop
+            
+            # if webcam, list to np.array
+            if type(im0) is list:
+                for tmp in im0:
+                    pass
+                im0 = tmp
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
             key = 0
             if len(det):
@@ -282,8 +298,20 @@ def run(
                         speed = (preDistance - curDistance) / diff_time
                         if speed > 0:
                             crashTime = curDistance / speed
-                            if crashTime > 0 and crashTime < 5:
-                                print(f'crashTime: {crashTime}')
+                            print(f'\t > crashTime : {crashTime}\n')
+                            if crashTime > 0 and crashTime < 30:
+                                print(f'\t\tcrashTime: {crashTime}\n')
+                                #GPIO.output(Relay, GPIO.LOW)
+                                for count in range(3):
+                                    GPIO.output(buzzer, GPIO.HIGH)
+                                    GPIO.output(led, GPIO.HIGH)
+                                    time.sleep(0.5)
+                                    GPIO.output(buzzer, GPIO.LOW)
+                                    GPIO.output(led, GPIO.LOW)
+                                    time.sleep(0.5)
+                    else:
+                        #GPIO.output(Relay, GPIO.HIGH)
+                        pass
 
                 preObjectTracker = {}
                 for key, value in objectTracker.items():
@@ -295,7 +323,7 @@ def run(
 
             # Stream results
             im0 = annotator.result()
-            #cv2.imshow('im0', im0)
+            cv2.imshow('im0', im0)
             key = cv2.waitKey(1)    # 1 millisecond
             if key == ord('q'):
                 break
