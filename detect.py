@@ -51,12 +51,12 @@ import shutil
 
 # Jetson.GPIO
 import Jetson.GPIO as GPIO
-#Relay = 10
+Relay = 11
 buzzer = 33
 led = 7
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
-#GPIO.setup(Relay, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(Relay, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(buzzer, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(led, GPIO.OUT, initial=GPIO.LOW)
 
@@ -130,7 +130,7 @@ def run(
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
         dnn=False,  # use OpenCV DNN for ONNX inference
-        model='mymodel.pkl',
+        model='distance-model/mymodel.pkl',
 ):
     source = str(source)
 ### 동영상 저장할 디렉토리 경로 설정하는 코드
@@ -298,10 +298,9 @@ def run(
                         speed = (preDistance - curDistance) / diff_time
                         if speed > 0:
                             crashTime = curDistance / speed
-                            print(f'\t > crashTime : {crashTime}\n')
                             if crashTime > 0 and crashTime < 30:
-                                print(f'\t\tcrashTime: {crashTime}\n')
-                                #GPIO.output(Relay, GPIO.LOW)
+                                print(f'\n\t\t< crashTime: {crashTime} >\n')
+                                GPIO.output(Relay, GPIO.LOW)
                                 for count in range(3):
                                     GPIO.output(buzzer, GPIO.HIGH)
                                     GPIO.output(led, GPIO.HIGH)
@@ -310,7 +309,7 @@ def run(
                                     GPIO.output(led, GPIO.LOW)
                                     time.sleep(0.5)
                     else:
-                        #GPIO.output(Relay, GPIO.HIGH)
+                        GPIO.output(Relay, GPIO.HIGH)
                         pass
 
                 preObjectTracker = {}
