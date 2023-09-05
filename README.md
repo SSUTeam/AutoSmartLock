@@ -40,5 +40,5 @@ Usage - model:
 ```
 
 ```
-python detect.py --weights training-result/weights/best.pt --source josun.mp4 --model mymodel.pkl
+python detect.py --weights training-result/weights/best.pt --source 0 --model model/mymodel.pkl
 ```
