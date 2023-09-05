@@ -46,7 +46,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import threading
-# from flask import Flask
 import shutil
 
 # Jetson.GPIO
@@ -59,11 +58,6 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(Relay, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(buzzer, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(led, GPIO.OUT, initial=GPIO.LOW)
-
-# Flask Server
-def server():
-    return
-t = threading.Thread(target=server)
 
 # define the name of the directory to be created
 ### 디렉토리 만드는 코드
@@ -259,7 +253,7 @@ def run(
 ###
                         csvRowList = [matchObjectID, y2]
                         
-# 2. 거리 예측 (프레임마다 예측할 경우)
+# 거리 예측
                         if object_count == 0:
                             df_test = pd.DataFrame({
                                     'matchObjectID': [matchObjectID],
@@ -273,7 +267,7 @@ def run(
                         cv2.imwrite('results/frames/{0}.png'.format(frame), im0)
 ###
 
-# 2. 거리 예측 (프레임마다 예측할 경우)
+# 거리 예측
                 df_result = predict(df_test)
                 xyxy_tmp = reversed(det).tolist()
 
@@ -298,7 +292,7 @@ def run(
                         speed = (preDistance - curDistance) / diff_time
                         if speed > 0:
                             crashTime = curDistance / speed
-                            if crashTime > 0 and crashTime < 30:
+                            if crashTime > 0 and crashTime < 10:
                                 print(f'\n\t\t< crashTime: {crashTime} >\n')
                                 GPIO.output(Relay, GPIO.LOW)
                                 for count in range(3):
@@ -315,18 +309,14 @@ def run(
                 preObjectTracker = {}
                 for key, value in objectTracker.items():
                     preObjectTracker[key] = value[1]
-
-                # 현재 프레임 시간을 다음 프레임에서 사용하기 위해 저장
-
-###
-
+                    
             # Stream results
             im0 = annotator.result()
             cv2.imshow('im0', im0)
             key = cv2.waitKey(1)    # 1 millisecond
             if key == ord('q'):
                 break
-### 동영상으로 저장하는 코드
+
         if key == ord('q'):
             break
 
